@@ -10,7 +10,7 @@ class Admin::ContentController < Admin::BaseController
     @items = Tag.find_with_char params[:article][:keywords].strip
     render :inline => "<%= raw auto_complete_result @items, 'name' %>"
   end
-
+  
   def index
     @search = params[:search] ? params[:search] : {}
     
@@ -35,6 +35,14 @@ class Admin::ContentController < Admin::BaseController
       return
     end
     new_or_edit
+  end
+  
+  def merge
+    if current_user.profile.label == 'admin'
+      @article = Article.find(params[:id])
+      @article.merge_with(params[:other_article_id])
+    end
+    redirect_to :action => 'index'
   end
 
   def destroy
